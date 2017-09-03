@@ -16,6 +16,14 @@ alias rm='rm -iv'									# Preferred 'rm' implementation
 alias cp='cp -iv'									# Preferred 'cp' implementation
 alias mv='mv -iv'									# Preferred 'mv' implementation
 alias mkdir='mkdir -pv'								# Preferred 'mkdir' implementation
+
+#-------------
+# Aliases moves
+#-------------
+
+alias dp='pwd | xclip'
+alias cls='clear && ls'
+alias pd='cd $(xclip -o) && clear && ls'
 alias ..='cd ../'									# Go back 1 directory level (fast typers)
 alias ...='cd ../../'								# Go back 2 directory level (fast typers)
 alias .3='cd ../../../'								# Go back 3 directory level (fast typers)
@@ -34,8 +42,12 @@ alias qtdesigner="/usr/lib/x86_64-linux-gnu/qt5/bin/designer"
 #-------------
 
 alias g="git"
-alias gps="g ps"
-alias gpl="g pl"
+alias gps="git push"
+alias gpl="git pull"
+alias grm="git remote"
+alias gcl="git clone"
+alias grb="git rebase"
+alias gss="git stash"
 
 #-------------
 # Environment configuration
