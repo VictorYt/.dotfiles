@@ -57,6 +57,11 @@ alias gss="git stash"
 alias path='echo -e ${PATH//:/\\n}'
 alias libpath='echo -e ${LD_LIBRARY_PATH//:/\\n}'
 
+# Keyboard
+alias dv='setxkbmap fr -variant bepo' 				# Dvorak: BÉPO
+alias fr='setxkbmap fr' 							# AZERTY
+alias us='setxkbmap us' 							# QUERTY
+
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
