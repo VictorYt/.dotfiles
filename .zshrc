@@ -2,6 +2,8 @@ autoload antigen
 
 # Aliases
 source ~/.bash_aliases
+source ~/.bash_profile
+source ~/.bashrc
 
 #Antigen
 source ~/.dotfiles/antigen/antigen.zsh 
