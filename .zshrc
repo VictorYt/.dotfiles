@@ -8,6 +8,7 @@ source ~/.bashrc
 #Antigen
 source ~/.dotfiles/antigen/antigen.zsh 
 
+# Installlation de oh-my-zsh
 antigen use oh-my-zsh 
 
 # plugin
