@@ -26,7 +26,7 @@ export PATH=$PATH:/usr/lib/jvm/java-8-openjdk-amd64/bin
 
 
 # added by Miniconda3 4.3.21 installer
-export PATH="/home/victoryt/miniconda3/bin:$PATH"
+export PATH="$PATH:/home/victoryt/miniconda3/bin"
 
 # added by Me Cytoscape 3.5.1
 export PATH=$PATH:/home/victoryt/Cytoscape_v3.5.1
