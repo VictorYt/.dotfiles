@@ -26,6 +26,7 @@ echo Installing Web Dev apps...
 cask 'iterm2'
 cask 'itsycal'
 cask 'sublime-text'
+cask 'gitkraken'
 cask 'sequel-pro'
 echo Installing Media apps...
 cask 'spotify'
@@ -33,6 +34,7 @@ cask 'vlc'
 echo Installing Productivity apps...
 cask 'dropbox'
 cask 'skype'
+cask "zoomus"
 
 # Mas
 echo Installing Apps from the App Store...
@@ -45,5 +47,6 @@ mas "Pages", id: 409201541
 mas "All-in-One Messenger", id: 1456462087
 mas "Dr. Unarchiver", id: 1127253508
 mas "SketchBook", id: 863486266
+#mas "Reeder", id: 1449412482
 
 echo Everything is ready. Enjoy your new Mac!
