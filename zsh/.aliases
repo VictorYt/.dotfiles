@@ -9,8 +9,8 @@
 # Presonnal Alias
 #-------------
 
-alias ll='ls -alF'									# Show all
-alias l='ls -CF'									# Show files in current directory
+alias ll='ls -lF'									# Show all
+alias l='ls -FGlAhp'								# Show files in current directory
 alias la='ls -A'									# Show all in current directory
 alias rm='rm -iv'									# Preferred 'rm' implementation
 alias cp='cp -iv'									# Preferred 'cp' implementation
@@ -23,7 +23,8 @@ alias covid='curl -s "https://corona-stats.online/$1"' # Get covid info from $1 
 # Aliases moves
 #-------------
 
-alias cls='clear && ls'
+alias c='clear'
+alias cls='clear && ls -lF'
 alias ..='cd ../'									# Go back 1 directory level (fast typers)
 alias ...='cd ../../'								# Go back 2 directory level (fast typers)
 alias .3='cd ../../../'								# Go back 3 directory level (fast typers)
