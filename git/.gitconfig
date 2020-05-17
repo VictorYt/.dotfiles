@@ -1,25 +1,26 @@
+[user]
+    email = victor.ythier@gmail.com
+    name = VictorYt
+[credential]
+    helper = osxkeychain
+[core]
+    editor = subl
+    excludesfile = ~/.gitignore_global
+[pull]
+  rebase = true
+[commit]
+  verbose = true
 [alias]
-    a = add
-    ad = add
-    ap = add -p
-    pa = add --patch
     ai = add -i
 
     st = status
 
     ci = commit
     cim = commit -m
-    cam = commit -Am
-    cif = commit --fixup
 
-    lg = log
     lgp = log -p
     lgo = log --oneline
-    lol = log --graph --decorate --pretty=oneline --abbrev-commit
-    lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
-    lgl = log --graph --full-history --all --color --pretty=tformat:"%x1b[31m%h%x09%x1b[32m%d%x1b[0m%x20%s%x20%x1b[33(%an)%x1b[om"
     alltags = log --decorate --oneline --simplify-by-decoration
-    who = shortlog -s --
 
     cl = clone
 
@@ -28,21 +29,3 @@
 
     b = branch
     br = branch
-
-    cp = cherry-pick
-
-    rb = rebase
-    ri = rebase -i
-    rbc = rebase --continue
-    rbs = rebase --skip
-
-    df = diff
-    dfs = diff --staged
-    dfstat = diff --stat -r
-
-    ss = stash
-    sa = stash apply
-    sl = stash list
-    sh = stash show
-    sd = stash drop
-    sp = stash pop
