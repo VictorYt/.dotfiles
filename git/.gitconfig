@@ -5,7 +5,7 @@
     helper = osxkeychain
 [core]
     editor = subl
-    excludesfile = ~/.gitignore_global
+    excludesfile = ~/.dotfiles/git/.gitignore_global
 [pull]
   rebase = true
 [commit]
