@@ -26,6 +26,7 @@ echo Installing Web Dev apps...
 cask 'iterm2'
 cask 'itsycal'
 cask 'sublime-text'
+cask 'atom'
 cask 'gitkraken'
 cask 'sequel-pro'
 echo Installing Media apps...
