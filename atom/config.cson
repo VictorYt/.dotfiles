@@ -1,0 +1,26 @@
+"*":
+  autocomplete:
+    includeCompletionsFromAllBuffers: true
+  core:
+    disabledPackages: []
+    excludeVcsIgnoredPaths: false
+    ignoredNames: [
+      ".git"
+      ".svn"
+      ".DS_Store"
+    ]
+    telemetryConsent: "limited"
+  editor:
+    confirmCheckoutHeadRevision: false
+    fontFamily: "Source Code Pro"
+    fontSize: 13
+    showIndentGuide: true
+  "exception-reporting":
+    userId: "5dc2b6a5-6c4e-4573-9d49-841771af935b"
+  "fuzzy-finder":
+    ignoredNames: [
+      "*.class"
+      "*.asc"
+    ]
+  whitespace:
+    ignoreWhitespaceOnCurrentLine: false
