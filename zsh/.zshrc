@@ -107,4 +107,24 @@ source ~/.aliases
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-eval "$(pyenv init -)"
+
+
+# Run pyenv every time opening term
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+fi
+
+# We want to regularly go to our virtual environment directory
+#echo "export WORKON_HOME=~/.virtualenvs" >> .zshrc
+export WORKON_HOME=~/.virtualenvs
+# If in a given virtual environment, make a virtual environment directory
+# If one does not already exist
+#echo "mkdir -p $WORKON_HOME" >> .zshrc
+mkdir -p $WORKON_HOME
+# Activate the new virtual environment by calling this script
+# Note that $USER will substitute for your current user
+#echo ". ~/.pyenv/versions/3.7.7/bin/virtualenvwrapper.sh" >> .zshrc
+source ~/.pyenv/versions/3.7.7/bin/virtualenvwrapper.sh
+
+
+
