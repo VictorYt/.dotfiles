@@ -2,7 +2,6 @@
   autocomplete:
     includeCompletionsFromAllBuffers: true
   core:
-    disabledPackages: []
     excludeVcsIgnoredPaths: false
     ignoredNames: [
       ".git"
@@ -14,7 +13,10 @@
     confirmCheckoutHeadRevision: false
     fontFamily: "Source Code Pro"
     fontSize: 13
+    lineHeight: 1.75
+    scrollPastEnd: true
     showIndentGuide: true
+    tabLength: 4
   "exception-reporting":
     userId: "5dc2b6a5-6c4e-4573-9d49-841771af935b"
   "fuzzy-finder":
@@ -22,5 +24,9 @@
       "*.class"
       "*.asc"
     ]
+  "linter-ui-default":
+    showPanel: true
+  "python-autopep8":
+    formatOnSave: true
   whitespace:
     ignoreWhitespaceOnCurrentLine: false
