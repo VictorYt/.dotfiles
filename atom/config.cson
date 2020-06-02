@@ -1,6 +1,8 @@
 "*":
   autocomplete:
     includeCompletionsFromAllBuffers: true
+  "autocomplete-python":
+    useKite: false
   core:
     excludeVcsIgnoredPaths: false
     ignoredNames: [
