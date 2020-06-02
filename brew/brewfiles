@@ -33,18 +33,19 @@ cask 'sublime-text'
 cask 'atom'
 cask 'gitkraken'
 cask 'sequel-pro'
+cask '1password'
 echo Installing Media apps...
 cask 'spotify'
 cask 'vlc'
 echo Installing Productivity apps...
-cask 'alfred4'
+cask 'alfred'
+cask 'bartender'
 cask 'dropbox'
 cask 'skype'
 cask 'zoomus'
 
 # Mas
 echo Installing Apps from the App Store...
-mas "Dashlane", id: 552383089
 mas "iStat Menus", id: 1319778037
 mas "Magnet", id: 441258766
 mas "Keynote", id: 409183694
