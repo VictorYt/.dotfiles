@@ -26,9 +26,13 @@
       "*.class"
       "*.asc"
     ]
+  "ide-r":
+    RPath: "/usr/local/bin/R"
   "linter-ui-default":
     showPanel: true
   "python-autopep8":
     formatOnSave: true
+  welcome:
+    showOnStartup: false
   whitespace:
     ignoreWhitespaceOnCurrentLine: false
