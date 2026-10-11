@@ -1,0 +1,33 @@
+{{- /* Profil de la machine : mac | wsl | cluster | linux
+       - mac / wsl : détectés automatiquement
+       - autre Linux : demandé une seule fois (cluster = pas de sudo)
+       - forçable avec DOTFILES_PROFILE=cluster chezmoi init ... */ -}}
+{{- $profile := env "DOTFILES_PROFILE" -}}
+{{- if not $profile -}}
+{{-   if eq .chezmoi.os "darwin" -}}
+{{-     $profile = "mac" -}}
+{{-   else if and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
+{{-     $profile = "wsl" -}}
+{{-   else -}}
+{{-     $profile = promptChoiceOnce . "profile" "Profil de cette machine (cluster = sans sudo)" (list "cluster" "linux") "cluster" -}}
+{{-   end -}}
+{{- end -}}
+
+{{- $name := promptStringOnce . "name" "Nom git" "VictorYt" -}}
+{{- $email := promptStringOnce . "email" "Email git" "victor.ythier@gmail.com" -}}
+
+sourceDir = {{ .chezmoi.workingTree | quote }}
+
+[data]
+    profile = {{ $profile | quote }}
+    name = {{ $name | quote }}
+    email = {{ $email | quote }}
+    # sudo disponible ? (false sur le cluster : tout s'installe dans $HOME)
+    sudo = {{ ne $profile "cluster" }}
+
+[diff]
+    exclude = ["scripts"]
+
+[git]
+    autoCommit = false
+    autoPush = false

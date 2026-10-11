@@ -1,0 +1,94 @@
+# Liste des paquets par plateforme.
+# Modifier ce fichier relance automatiquement le script d'installation
+# correspondant au prochain `chezmoi apply` (scripts run_onchange_).
+
+packages:
+  darwin:
+    brews:
+      # Dotfiles / shell
+      - chezmoi
+      - starship
+      - zoxide        # ajout : cd intelligent (z)
+      - fzf           # ajout : recherche floue (Ctrl-R, Ctrl-T)
+      - bat           # ajout : cat avec coloration
+      - eza           # ajout : ls moderne
+      # Dev
+      - git
+      - git-delta
+      - gh
+      - gitleaks
+      - neovim
+      - node
+      - uv
+      - pixi
+      - jq
+      - ripgrep
+      - fd
+      - tree
+      - btop
+      - htop
+      - lima
+      # Bio-info
+      - parallel
+      - pigz
+      - samtools
+      - mas
+    casks:
+      - 1password
+      - aldente
+      - antigravity
+      - brave-browser
+      - citrix-workspace
+      - claude
+      - cursor
+      - font-jetbrains-mono-nerd-font
+      - ghostty
+      - gitkraken
+      - google-gemini
+      - istat-menus
+      - notion
+      - obsidian
+      - onedrive
+      - orbstack
+      - raycast
+      - signal
+      - sublime-text
+      - whatsapp
+      - zed
+    # Apps Mac App Store : `mas list` pour récupérer les identifiants.
+    mas: []
+    #  - { name: "Keynote", id: 409183694 }
+    npm:
+      - ccstatusline
+
+  # WSL2 / Linux avec sudo : socle système via apt
+  apt:
+    - build-essential
+    - ca-certificates
+    - curl
+    - git
+    - unzip
+    - zsh
+    - wslu          # wslview, ouvre les liens dans le navigateur Windows
+
+  # Outils CLI installés SANS sudo via pixi (conda-forge) sur WSL et cluster
+  pixi:
+    - starship
+    - zoxide
+    - fzf
+    - bat
+    - eza
+    - ripgrep
+    - fd-find
+    - git-delta
+    - gh
+    - nvim
+    - jq
+    - btop
+    - tree
+    - uv
+    - chezmoi
+  # Uniquement sur le cluster (souvent absents ou trop vieux)
+  pixi_cluster:
+    - zsh
+    - git

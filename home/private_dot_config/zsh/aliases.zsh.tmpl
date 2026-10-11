@@ -1,0 +1,89 @@
+# Alias & fonctions (repris de l'ancien .aliases, nettoyés)
+
+# --- Fichiers -----------------------------------------------------------------
+if command -v eza >/dev/null; then
+  alias ls='eza --group-directories-first'
+  alias ll='eza -lF --git --group-directories-first'
+  alias l='eza -laF --git --group-directories-first'
+  alias tree='eza --tree'
+else
+  alias ll='ls -lF'
+  alias l='ls -lAhF'
+fi
+alias la='ls -A'
+command -v bat >/dev/null && alias cat='bat --paging=never'
+
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+alias mkdir='mkdir -p'
+
+alias c='clear'
+alias ...='cd ../..'
+alias .3='cd ../../..'
+alias .4='cd ../../../..'
+
+mcd()  { mkdir -p "$1" && cd "$1"; }               # crée un dossier et y entre
+zipf() { zip -r "$1".zip "$1"; }                   # zip d'un dossier
+ff()   { find . -name "$@"; }                      # cherche un fichier (ou: fd)
+
+extract() {                                        # décompresse la plupart des archives
+  [[ -f $1 ]] || { echo "'$1' n'est pas un fichier valide"; return 1; }
+  case $1 in
+    *.tar.bz2|*.tbz2) tar xjf "$1" ;;
+    *.tar.gz|*.tgz)   tar xzf "$1" ;;
+    *.tar.xz)         tar xJf "$1" ;;
+    *.tar)            tar xf "$1" ;;
+    *.bz2)            bunzip2 "$1" ;;
+    *.gz)             gunzip "$1" ;;
+    *.zip)            unzip "$1" ;;
+    *.7z)             7z x "$1" ;;
+    *.zst)            unzstd "$1" ;;
+    *) echo "'$1' : format non géré"; return 1 ;;
+  esac
+}
+
+# --- Git ----------------------------------------------------------------------
+alias g='git'
+alias gs='git status -sb'
+alias gst='clear && git status'
+alias gps='git push'
+alias gpl='git pull'
+alias grm='git remote'
+alias gcl='git clone'
+alias grb='git rebase'
+alias gss='git stash'
+alias glo='git log --oneline --graph --decorate'
+
+# --- Divers -------------------------------------------------------------------
+alias path='print -l $path'
+alias reload='exec zsh'
+alias dot='chezmoi cd'                              # aller dans ~/.dotfiles
+alias dotup='chezmoi update'                        # git pull + apply
+meteo() { curl -s "https://wttr.in/${1:-}?lang=fr"; }
+myip()  { curl -s https://ifconfig.me; echo; }
+{{- if eq .profile "mac" }}
+
+# --- macOS --------------------------------------------------------------------
+alias apptainer='lima --instance apptainer apptainer'
+alias gitkraken='open -a GitKraken'
+alias flushdns='sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder'
+alias ports='sudo lsof -iTCP -sTCP:LISTEN -nP'
+trash()     { command mv "$@" ~/.Trash; }
+spotlight() { mdfind "kMDItemDisplayName == '$*'wc"; }
+{{- end }}
+{{- if eq .profile "wsl" }}
+
+# --- WSL ----------------------------------------------------------------------
+command -v wslview >/dev/null && export BROWSER=wslview
+alias open='wslview'
+alias explorer='explorer.exe .'
+{{- end }}
+{{- if eq .profile "cluster" }}
+
+# --- Cluster (SLURM) ----------------------------------------------------------
+alias sq='squeue -u $USER'
+alias sqa='squeue -u $USER -o "%.10i %.9P %.30j %.8T %.10M %.6D %R"'
+alias sinter='srun --pty -c 2 --mem 8G -t 2:00:00 zsh'   # session interactive
+quota_home() { du -sh ~ 2>/dev/null; }
+{{- end }}

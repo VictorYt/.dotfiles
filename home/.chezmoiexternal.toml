@@ -1,0 +1,21 @@
+# Plugins zsh téléchargés par chezmoi dans ~/.local/share/zsh/plugins
+# (fonctionne partout, sans sudo ni gestionnaire de plugins).
+# Versions épinglées : mettre à jour volontairement en changeant l'URL.
+
+[".local/share/zsh/plugins/zsh-autosuggestions"]
+    type = "archive"
+    url = "https://github.com/zsh-users/zsh-autosuggestions/archive/refs/tags/v0.7.1.tar.gz"
+    exact = true
+    stripComponents = 1
+
+[".local/share/zsh/plugins/zsh-syntax-highlighting"]
+    type = "archive"
+    url = "https://github.com/zsh-users/zsh-syntax-highlighting/archive/refs/tags/0.8.0.tar.gz"
+    exact = true
+    stripComponents = 1
+
+[".local/share/zsh/plugins/zsh-completions"]
+    type = "archive"
+    url = "https://github.com/zsh-users/zsh-completions/archive/refs/tags/0.35.0.tar.gz"
+    exact = true
+    stripComponents = 1

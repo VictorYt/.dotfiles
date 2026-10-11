@@ -1,0 +1,8 @@
+" ~/.vimrc minimal, pour les machines sans Neovim
+syntax on
+filetype plugin indent on
+set backspace=indent,eol,start
+set number
+set mouse=a
+set incsearch hlsearch ignorecase smartcase
+set expandtab shiftwidth=4 tabstop=4

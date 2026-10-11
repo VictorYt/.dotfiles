@@ -1,0 +1,3 @@
+# ~/.bash_profile — shells de connexion bash (ssh sur le cluster, WSL).
+[ -f ~/.profile ] && . ~/.profile
+[ -f ~/.bashrc ] && . ~/.bashrc

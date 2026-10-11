@@ -1,0 +1,25 @@
+# ~/.ssh/config — géré par chezmoi.
+# Hôtes propres à une machine (cluster, serveurs...) : ~/.ssh/config.local (non versionné)
+# Les Include doivent rester AVANT tout bloc Host.
+{{- if eq .profile "mac" }}
+Include ~/.orbstack/ssh/config
+{{- end }}
+Include ~/.ssh/config.local
+
+Host github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+    AddKeysToAgent yes
+{{- if eq .profile "mac" }}
+    UseKeychain yes
+{{- end }}
+
+Host *
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+    HashKnownHosts yes
+    # Réutilise les connexions (pratique pour un cluster avec 2FA)
+    ControlMaster auto
+    ControlPath ~/.ssh/cm-%C
+    ControlPersist 10m

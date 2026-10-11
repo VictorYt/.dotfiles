@@ -1,0 +1,10 @@
+README.md
+
+{{- if ne .profile "mac" }}
+.config/zed
+.config/ghostty
+{{- end }}
+
+{{- if eq .profile "mac" }}
+.bash_profile
+{{- end }}

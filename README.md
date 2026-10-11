@@ -1,96 +1,73 @@
 # .dotfiles
 
-This is my dotfiles for my system customizations and to setup my development environment.
+Mes dotfiles, gérés avec [chezmoi](https://www.chezmoi.io/), pour trois environnements :
 
-[png screenshot]
-
-
-## What's included ?
-
-+ Homebrew
-  + Installs Homebrew AND brew install's all of my favourite packages
-  + Uses homebrew-cask to install all my applications
-+ RVM
-+ macOS
-  + Installs applications via the Mac App Store
-+ Git
-  + Git config
-  + Global gitignore
-+ Vim config
-+ SSH config
-+ Oh-My-Zsh
-  + Robbyrussell theme
-  + Aliases
-+ iTerm2 colors theme
-+ Sublime-text configuration
-
-## How to use it ?
-
-Clone the project in your home directory :
-
-```bash
-$ cd ~
-$ xcode-select --install
-$ git clone 
-$ cd dotfiles
-$ find ~/dotfiles -name '*.sh' | xargs -I file chmod u+x file # Make sure you can execute the scripts
-$ make install
-```
-
-**Before running any commands, you must edit files according to your needs.**
-
-For exemple, open the `brew/Brewfile` and remove applications you don't want to install from the list.
+| Profil    | Détection                          | Paquets                                   | sudo |
+|-----------|------------------------------------|-------------------------------------------|------|
+| `mac`     | automatique (macOS)                | Homebrew (formules + casks), npm          | oui  |
+| `wsl`     | automatique (noyau `microsoft`)    | apt (socle) + [pixi](https://pixi.sh) (outils CLI) | oui  |
+| `cluster` | demandé au 1er lancement           | pixi uniquement, tout dans `$HOME`        | **non** |
+| `linux`   | demandé au 1er lancement           | apt + pixi                                | oui  |
 
 ## Installation
 
-### Brew
-
-Packages and applications are installed with [https://brew.sh/](https://brew.sh/).
-
 ```bash
-$ brew/brew.sh
+git clone https://github.com/VictorYt/.dotfiles.git ~/.dotfiles
+~/.dotfiles/install.sh                        # détecte le profil
+DOTFILES_PROFILE=cluster ~/.dotfiles/install.sh  # ou le forcer
 ```
 
-### Sensible macOS defaults
+`install.sh` installe chezmoi dans `~/.local/bin` s'il est absent (sans sudo), puis lance
+`chezmoi init --apply`. Pour voir ce qui va changer **avant** d'appliquer :
 
 ```bash
-$ macOS/macos.sh
+chezmoi init --source ~/.dotfiles
+chezmoi diff
+chezmoi apply
 ```
 
-### Git
+## Au quotidien
 
 ```bash
-$ git/git.sh
+chezmoi edit ~/.zshrc     # éditer un fichier géré (puis chezmoi apply)
+chezmoi re-add            # reprendre dans le dépôt une modif faite directement dans ~
+chezmoi update            # git pull + apply (alias : dotup)
+chezmoi cd                # aller dans le dépôt (alias : dot)
 ```
 
-### Vim
+Ajouter/retirer un paquet : éditer [`home/.chezmoidata/packages.yaml`](home/.chezmoidata/packages.yaml),
+le script d'installation se relance seul au prochain `chezmoi apply`.
 
-```bash
-$ vim/vim.sh
+## Contenu
+
+```
+install.sh                     amorçage (chezmoi sans sudo)
+home/                          racine chezmoi (.chezmoiroot)
+├── .chezmoi.toml.tmpl         détection du profil, nom/email git
+├── .chezmoidata/packages.yaml listes de paquets par plateforme
+├── .chezmoiexternal.toml      plugins zsh (versions épinglées)
+├── .chezmoiscripts/           installation brew / apt+pixi, préférences macOS
+├── dot_zshenv, dot_zprofile, dot_zshrc   zsh léger + starship, sans framework
+├── dot_bashrc, dot_bash_profile          bash → bascule vers zsh sur le cluster
+├── dot_gitconfig              git moderne (delta, zdiff3, fsckObjects…)
+├── private_dot_ssh/           config SSH (GitHub, multiplexage)
+└── private_dot_config/        nvim (LazyVim), starship, ghostty, zed, zsh/aliases
 ```
 
-### SSH
+## Fichiers locaux (jamais versionnés)
 
-```bash
-$ ssh/ssh.sh
-```
+Pour ce qui est propre à une machine ou sensible :
 
-### ZSH
+- `~/.zshrc.local`, `~/.bashrc.local` — modules du cluster, variables privées…
+- `~/.gitconfig.local` — email pro, signature…
+- `~/.ssh/config.local` — hôtes (cluster, serveurs)
 
-```bash
-$ zsh/zsh.sh
-```
+Les secrets ne vont **jamais** dans ce dépôt (public). Pour en gérer, chezmoi s'intègre
+à 1Password (`onepasswordRead`) ou chiffre avec age.
 
-### iTerm2
+## Sécurité
 
-```bash
-$ iTerm2/iterm.sh
-```
-
-Once the theme is downloaded, you can modify your iTerm2 settings in the app.
-
-### Sublime-text
-
-```bash
-$ sublimetext/sublimetext.sh
-```
+- CI GitHub : [gitleaks](https://github.com/gitleaks/gitleaks) (secrets), shellcheck,
+  rendu des templates pour chaque profil.
+- Vérification locale : `gitleaks git ~/.dotfiles`.
+- Les commandes précédées d'une espace ne sont pas enregistrées dans l'historique zsh.

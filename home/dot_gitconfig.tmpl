@@ -1,0 +1,80 @@
+# ~/.gitconfig — géré par chezmoi. Réglages propres à une machine : ~/.gitconfig.local
+[user]
+    name = {{ .name }}
+    email = {{ .email }}
+
+[init]
+    defaultBranch = main
+[core]
+    editor = nvim
+    # le gitignore global est lu par défaut dans ~/.config/git/ignore
+{{- if lookPath "delta" }}
+    pager = delta
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    navigate = true
+    line-numbers = true
+{{- end }}
+
+[pull]
+    rebase = true
+[push]
+    autoSetupRemote = true
+    default = current
+[fetch]
+    prune = true
+    fsckObjects = true
+[rebase]
+    autoStash = true
+    updateRefs = true
+[merge]
+    conflictStyle = zdiff3
+[diff]
+    algorithm = histogram
+    colorMoved = default
+[commit]
+    verbose = true
+[rerere]
+    enabled = true
+[branch]
+    sort = -committerdate
+
+# Sécurité : vérifie l'intégrité des objets reçus
+[transfer]
+    fsckObjects = true
+[receive]
+    fsckObjects = true
+{{- if eq .profile "mac" }}
+
+[credential]
+    helper = osxkeychain
+{{- end }}
+{{- if ne .profile "cluster" }}
+
+# Clone GitHub en SSH (clé dans ~/.ssh)
+[url "git@github.com:"]
+    insteadOf = https://github.com/
+{{- end }}
+
+[alias]
+    st = status -sb
+    ci = commit
+    cim = commit -m
+    co = checkout
+    sw = switch
+    b = branch
+    br = branch
+    ai = add -i
+    lgp = log -p
+    lgo = log --oneline
+    lg = log --oneline --graph --decorate --all
+    alltags = log --decorate --oneline --simplify-by-decoration
+    cl = clone
+    ps = push
+    pl = pull
+    undo = reset --soft HEAD~1
+    amend = commit --amend --no-edit
+
+[include]
+    path = ~/.gitconfig.local

@@ -1,0 +1,69 @@
+# ~/.zshrc — géré par chezmoi (~/.dotfiles). Profil : {{ .profile }}
+# Modifs locales non versionnées : ~/.zshrc.local
+
+# --- PATH ---------------------------------------------------------------------
+typeset -U path   # pas de doublons
+path=(
+  $HOME/.local/bin
+  $HOME/.pixi/bin
+  $HOME/.cargo/bin
+  $path
+)
+export PATH
+
+export EDITOR=nvim VISUAL=nvim
+command -v nvim >/dev/null || export EDITOR=vim VISUAL=vim
+export PAGER=less LESS='-R -F -i'
+
+# --- Historique ---------------------------------------------------------------
+HISTFILE="$XDG_STATE_HOME/zsh/history"
+[[ -d ${HISTFILE:h} ]] || mkdir -p ${HISTFILE:h}
+[[ ! -f $HISTFILE && -f ~/.zsh_history ]] && mv ~/.zsh_history $HISTFILE   # migration unique
+HISTSIZE=50000
+SAVEHIST=50000
+setopt extended_history       # horodatage
+setopt hist_ignore_all_dups
+setopt hist_ignore_space      # une commande précédée d'un espace n'est pas enregistrée (utile pour les secrets)
+setopt hist_reduce_blanks
+setopt share_history
+
+# --- Options ------------------------------------------------------------------
+setopt auto_cd auto_pushd pushd_ignore_dups
+setopt interactive_comments
+setopt no_beep
+bindkey -e
+
+# --- Complétion ---------------------------------------------------------------
+ZPLUGINS="$XDG_DATA_HOME/zsh/plugins"
+fpath=($ZPLUGINS/zsh-completions/src $fpath)
+autoload -Uz compinit
+zcompdump="$XDG_CACHE_HOME/zsh/zcompdump"
+[[ -d ${zcompdump:h} ]] || mkdir -p ${zcompdump:h}
+# Re-scan complet au plus une fois par jour (démarrage rapide, y compris sur NFS)
+_stale=($zcompdump(N.mh+24))
+if [[ ! -f $zcompdump || -n $_stale ]]; then
+  compinit -d $zcompdump
+else
+  compinit -C -d $zcompdump
+fi
+unset _stale
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/zcompcache"
+
+# --- Outils -------------------------------------------------------------------
+command -v starship >/dev/null && eval "$(starship init zsh)"
+command -v zoxide   >/dev/null && eval "$(zoxide init zsh)"
+command -v fzf      >/dev/null && source <(fzf --zsh 2>/dev/null)
+
+# --- Alias & fonctions --------------------------------------------------------
+for f in "$XDG_CONFIG_HOME"/zsh/*.zsh(N); do source "$f"; done
+
+# --- Plugins (à charger en dernier) -------------------------------------------
+[[ -f $ZPLUGINS/zsh-autosuggestions/zsh-autosuggestions.zsh ]] \
+  && source $ZPLUGINS/zsh-autosuggestions/zsh-autosuggestions.zsh
+[[ -f $ZPLUGINS/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] \
+  && source $ZPLUGINS/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# --- Local --------------------------------------------------------------------
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local

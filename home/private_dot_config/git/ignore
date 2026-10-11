@@ -1,0 +1,36 @@
+# Gitignore global
+
+# OS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+Desktop.ini
+
+# Éditeurs
+.idea/
+*.swp
+*~
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Node
+node_modules/
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+
+# Secrets : ne jamais commiter
+.env
+.env.*
+!.env.example
+*.pem
+*.key

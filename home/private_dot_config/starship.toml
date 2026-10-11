@@ -1,0 +1,11 @@
+"$schema" = "https://starship.rs/config-schema.json"
+
+# Évite les ralentissements sur les systèmes de fichiers réseau (cluster)
+command_timeout = 500
+scan_timeout = 30
+
+[hostname]
+ssh_only = true
+
+[cmd_duration]
+min_time = 2_000

@@ -1,0 +1,27 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/usr/bin/env bash
+# Linux (WSL2 / cluster) : socle apt si sudo est disponible, puis outils CLI
+# modernes via pixi, installés dans ~/.pixi sans aucun droit administrateur.
+# Relancé automatiquement quand .chezmoidata/packages.yaml change.
+set -euo pipefail
+
+{{ if .sudo -}}
+if command -v apt-get >/dev/null 2>&1; then
+  echo "==> Paquets système (apt, sudo requis)"
+  sudo apt-get update
+  sudo apt-get install -y --no-install-recommends {{ .packages.apt | join " " }}
+fi
+{{- end }}
+
+if ! command -v pixi >/dev/null 2>&1 && [ ! -x "$HOME/.pixi/bin/pixi" ]; then
+  echo "==> Installation de pixi dans ~/.pixi"
+  curl -fsSL https://pixi.sh/install.sh | PIXI_NO_PATH_UPDATE=1 bash
+fi
+export PATH="$HOME/.pixi/bin:$PATH"
+
+echo "==> Outils CLI (pixi global)"
+pixi global install {{ .packages.pixi | join " " }}
+{{- if eq .profile "cluster" }}
+pixi global install {{ .packages.pixi_cluster | join " " }}
+{{- end }}
+{{ end -}}

@@ -1,0 +1,23 @@
+# ~/.bashrc — géré par chezmoi. Profil : {{ .profile }}
+# Non interactif (scp, rsync, jobs SLURM...) : ne rien faire.
+case $- in *i*) ;; *) return ;; esac
+
+export PATH="$HOME/.local/bin:$HOME/.pixi/bin:$HOME/.cargo/bin:$PATH"
+{{- if ne .profile "mac" }}
+
+# Sans `chsh` possible (cluster), basculer vers zsh s'il est disponible.
+# Désactiver ponctuellement avec : NO_ZSH=1 bash
+if [ -z "${NO_ZSH:-}" ] && [ -z "${ZSH_VERSION:-}" ] && [ -z "${SLURM_JOB_ID:-}" ] \
+   && command -v zsh >/dev/null 2>&1; then
+  export SHELL="$(command -v zsh)"
+  exec zsh -l
+fi
+{{- end }}
+
+# Repli en bash
+HISTCONTROL=ignoreboth
+HISTSIZE=10000
+HISTFILESIZE=20000
+shopt -s histappend checkwinsize
+command -v starship >/dev/null && eval "$(starship init bash)"
+[ -f ~/.bashrc.local ] && . ~/.bashrc.local

@@ -1,0 +1,3 @@
+# Ghostty — https://ghostty.org/docs/config
+# (police installée par le cask font-jetbrains-mono-nerd-font, utile pour starship)
+font-family = "JetBrainsMono Nerd Font"

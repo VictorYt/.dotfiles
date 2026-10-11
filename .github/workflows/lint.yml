@@ -1,0 +1,41 @@
+name: lint
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: shellcheck install.sh
+
+  # Vérifie que les templates se génèrent pour chaque profil
+  render:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        profile: [wsl, cluster, linux]
+    steps:
+      - uses: actions/checkout@v4
+      - run: sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/local/bin
+      - name: chezmoi apply (dry-run)
+        env:
+          DOTFILES_PROFILE: ${{ matrix.profile }}
+        run: |
+          chezmoi init --source "$PWD" --promptDefaults
+          chezmoi apply --dry-run --verbose --exclude=scripts,externals

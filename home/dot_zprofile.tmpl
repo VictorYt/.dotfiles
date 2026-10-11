@@ -1,0 +1,9 @@
+# ~/.zprofile : shells de connexion.
+{{- if eq .profile "mac" }}
+
+# Homebrew
+eval "$(/opt/homebrew/bin/brew shellenv zsh)"
+
+# OrbStack : outils en ligne de commande et intégration
+source ~/.orbstack/shell/init.zsh 2>/dev/null || :
+{{- end }}

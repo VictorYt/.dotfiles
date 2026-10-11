@@ -1,0 +1,143 @@
+#!/usr/bin/env bash
+# claude-toggl — suivi du temps par projet dans Toggl Track, piloté par les hooks Claude Code.
+#
+#   claude-toggl start   (UserPromptSubmit) démarre un timer sur le projet courant,
+#                        ou garde celui qui tourne déjà pour ce projet
+#   claude-toggl touch   (Stop)             note l'heure de la dernière activité (pas d'appel API)
+#   claude-toggl stop    (SessionEnd)       arrête le timer de ce projet
+#
+# Projet Toggl = nom du dépôt git du répertoire courant (créé s'il n'existe pas).
+# Un timer lancé à la main dans Toggl (sans le tag claude-code) n'est jamais touché.
+# Après CLAUDE_TOGGL_IDLE_MIN minutes sans activité (30 par défaut), le timer est
+# clos rétroactivement à la dernière activité + 5 min, au lieu de compter la pause.
+#
+# Jeton API (Toggl › Profile › API Token), dans l'ordre :
+#   1. variable TOGGL_API_TOKEN
+#   2. Trousseau macOS : security add-generic-password -a "$USER" -s toggl-api-token -w
+#   3. fichier ~/.config/toggl/token (chmod 600), pour WSL / cluster
+set -euo pipefail
+
+API=https://api.track.toggl.com/api/v9
+TAG=claude-code
+DESCRIPTION="Claude Code"
+IDLE_MIN=${CLAUDE_TOGGL_IDLE_MIN:-30}
+GRACE_SEC=300
+
+STATE="${XDG_STATE_HOME:-$HOME/.local/state}/claude-toggl"
+mkdir -p "$STATE"
+# Jamais rien sur stdout : la sortie d'un hook UserPromptSubmit est injectée dans le contexte.
+exec >>"$STATE/log" 2>&1
+
+log() { echo "$(date '+%F %T') [$action] $*"; }
+
+action=${1:-}
+input=$(cat 2>/dev/null || true)
+cwd=$(jq -r '.cwd // empty' <<<"$input" 2>/dev/null || true)
+cwd=${cwd:-$PWD}
+now=$(date +%s)
+last_file="$STATE/last_activity"
+
+if [[ $action == touch ]]; then
+  echo "$now" >"$last_file"
+  exit 0
+fi
+
+token=${TOGGL_API_TOKEN:-}
+if [[ -z $token ]] && command -v security >/dev/null 2>&1; then
+  token=$(security find-generic-password -s toggl-api-token -w 2>/dev/null || true)
+fi
+token_file="${XDG_CONFIG_HOME:-$HOME/.config}/toggl/token"
+if [[ -z $token && -r $token_file ]]; then
+  token=$(<"$token_file")
+fi
+[[ -n $token ]] || { log "aucun jeton API, rien à faire"; exit 0; }
+
+# Le jeton passe par stdin (-K -) pour ne pas apparaître dans la liste des processus.
+api() {
+  local method=$1 path=$2
+  shift 2
+  printf 'user = "%s:api_token"\n' "$token" |
+    curl -fsS --max-time 10 -K - -X "$method" -H 'Content-Type: application/json' "$API$path" "$@"
+}
+
+iso() { date -u -r "$1" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u -d "@$1" +%Y-%m-%dT%H:%M:%SZ; }
+
+# --- Espace de travail (mis en cache) -------------------------------------------
+ws_file="$STATE/workspace_id"
+if [[ ! -s $ws_file ]]; then
+  api GET /me | jq -r '.default_workspace_id' >"$ws_file"
+fi
+wid=$(<"$ws_file")
+
+# --- Projet = dépôt git courant -------------------------------------------------
+root=$(git -C "$cwd" rev-parse --show-toplevel 2>/dev/null || echo "$cwd")
+[[ $root == "$HOME" ]] && name="Divers" || name=$(basename "$root")
+name=${name#.}   # ".dotfiles" -> "dotfiles"
+
+cache="$STATE/projects.json"
+[[ -s $cache ]] || echo '{}' >"$cache"
+pid=$(jq -r --arg n "$name" '.[$n] // empty' "$cache")
+if [[ -z $pid ]]; then
+  pid=$(api GET "/workspaces/$wid/projects?active=true&per_page=200" |
+    jq -r --arg n "$name" 'map(select(.name == $n)) | first | .id // empty')
+  if [[ -z $pid && $action == start ]]; then
+    pid=$(api POST "/workspaces/$wid/projects" \
+      -d "$(jq -n --arg n "$name" '{name: $n, active: true, is_private: true}')" | jq -r '.id')
+    log "projet Toggl créé : $name ($pid)"
+  fi
+  [[ -n $pid ]] || exit 0
+  tmp=$(mktemp)
+  jq --arg n "$name" --argjson id "$pid" '.[$n] = $id' "$cache" >"$tmp" && mv "$tmp" "$cache"
+fi
+
+# --- Timer en cours -----------------------------------------------------------
+cur=$(api GET /me/time_entries/current)
+cur_id=$(jq -r '.id // empty' <<<"$cur")
+cur_pid=$(jq -r '.project_id // empty' <<<"$cur")
+cur_ours=$(jq -r --arg t "$TAG" '(.tags // []) | index($t) != null' <<<"$cur")
+
+stop_entry() {   # $1 = id, $2 = heure d'arrêt (epoch) facultative
+  if [[ -n ${2:-} ]]; then
+    api PUT "/workspaces/$wid/time_entries/$1" -d "{\"stop\":\"$(iso "$2")\"}" >/dev/null
+  else
+    api PATCH "/workspaces/$wid/time_entries/$1/stop" >/dev/null
+  fi
+}
+
+# Inactivité trop longue : clore notre timer à la dernière activité (+ marge).
+if [[ -n $cur_id && $cur_ours == true && -s $last_file ]]; then
+  last=$(<"$last_file")
+  if (( now - last > IDLE_MIN * 60 )); then
+    stop_entry "$cur_id" $((last + GRACE_SEC))
+    log "timer $cur_id clos après inactivité ($(( (now - last) / 60 )) min)"
+    cur_id=""
+  fi
+fi
+
+case $action in
+  start)
+    echo "$now" >"$last_file"
+    if [[ -n $cur_id ]]; then
+      [[ $cur_pid == "$pid" ]] && exit 0                       # déjà en cours sur ce projet
+      [[ $cur_ours == true ]] || { log "timer manuel en cours, non modifié"; exit 0; }
+      stop_entry "$cur_id"                                     # changement de projet
+      log "timer $cur_id arrêté (changement de projet)"
+    fi
+    api POST "/workspaces/$wid/time_entries" -d "$(jq -n \
+      --arg d "$DESCRIPTION" --arg t "$TAG" --arg s "$(iso "$now")" \
+      --argjson w "$wid" --argjson p "$pid" \
+      '{created_with: "claude-toggl", description: $d, tags: [$t], project_id: $p,
+        workspace_id: $w, start: $s, duration: -1}')" >/dev/null
+    log "timer démarré : $name"
+    ;;
+  stop)
+    if [[ -n $cur_id && $cur_ours == true && $cur_pid == "$pid" ]]; then
+      stop_entry "$cur_id"
+      log "timer arrêté : $name"
+    fi
+    ;;
+  *)
+    log "usage : claude-toggl start|touch|stop"
+    exit 0
+    ;;
+esac
