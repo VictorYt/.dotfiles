@@ -51,8 +51,25 @@ home/                          racine chezmoi (.chezmoiroot)
 ├── dot_bashrc, dot_bash_profile          bash → bascule vers zsh sur le cluster
 ├── dot_gitconfig              git moderne (delta, zdiff3, fsckObjects…)
 ├── private_dot_ssh/           config SSH (GitHub, multiplexage)
-└── private_dot_config/        nvim (LazyVim), starship, ghostty, zed, zsh/aliases
+├── private_dot_config/        nvim (LazyVim), starship, ghostty, zed, zsh/aliases
+└── private_dot_local/bin/     claude-toggl (suivi du temps Toggl par projet git)
 ```
+
+## Terminal : couleurs et icônes
+
+- [`vivid`](https://github.com/sharkdp/vivid) génère `LS_COLORS` (thème `catppuccin-mocha`,
+  autres thèmes : `vivid themes`), lu par `eza`, GNU `ls` et la complétion zsh.
+  Sans vivid, repli sur `CLICOLOR`/`LSCOLORS` (macOS) ou `--color=auto` (Linux).
+- `ls`, `ll`, `l` et `tree` passent par `eza` avec `--icons=auto` : les icônes demandent une
+  [Nerd Font](https://www.nerdfonts.com/) (JetBrainsMono Nerd Font, installée par le profil `mac`
+  et configurée dans Ghostty). Sur WSL/cluster, choisir cette police dans le terminal hôte.
+- Réglage dans [`aliases.zsh.tmpl`](home/private_dot_config/zsh/aliases.zsh.tmpl).
+
+## Préférences macOS
+
+[`run_onchange_after_30-macos-defaults.sh.tmpl`](home/.chezmoiscripts/run_onchange_after_30-macos-defaults.sh.tmpl)
+applique Finder, Dock, clavier/trackpad, etc. Une clé refusée par macOS (domaine protégé) est
+signalée (`⚠️ ignoré`) sans bloquer les suivantes ; le nombre de clés ignorées est affiché à la fin.
 
 ## Fichiers locaux (jamais versionnés)
 
