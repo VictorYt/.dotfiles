@@ -1,14 +1,33 @@
 # Alias & fonctions (repris de l'ancien .aliases, nettoyés)
 
+# --- Couleurs (ls, eza, complétion) --------------------------------------------
+# vivid génère LS_COLORS (dossiers, symlinks, exécutables, archives, images...).
+# Autres thèmes : `vivid themes`. Lu par eza, GNU ls et la complétion zsh.
+if command -v vivid >/dev/null; then
+  export LS_COLORS="$(vivid generate catppuccin-mocha)"
+else
+  export CLICOLOR=1                              # BSD ls (macOS) sans vivid
+  export LSCOLORS=ExGxFxdxCxDxDxBxBxExEx
+fi
+# eza : symlink en cyan, liens cassés en rouge
+export EZA_COLORS="ln=36:or=31"
+# Complétion colorée comme ls (si compinit est chargé)
+(( $+functions[compdef] )) && zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+
 # --- Fichiers -----------------------------------------------------------------
 if command -v eza >/dev/null; then
-  alias ls='eza --group-directories-first'
-  alias ll='eza -lF --git --group-directories-first'
-  alias l='eza -laF --git --group-directories-first'
-  alias tree='eza --tree'
+  alias ls='eza --group-directories-first --icons=auto'
+  alias ll='eza -lF --git --icons=auto --group-directories-first'
+  alias l='eza -laF --git --icons=auto --group-directories-first'
+  alias tree='eza --tree --icons=auto'
+elif [[ $OSTYPE == darwin* ]]; then
+  alias ls='ls -G'
+  alias ll='ls -lFG'
+  alias l='ls -lAhFG'
 else
-  alias ll='ls -lF'
-  alias l='ls -lAhF'
+  alias ls='ls --color=auto'
+  alias ll='ls -lF --color=auto'
+  alias l='ls -lAhF --color=auto'
 fi
 alias la='ls -A'
 command -v bat >/dev/null && alias cat='bat --paging=never'

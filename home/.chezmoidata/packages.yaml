@@ -12,6 +12,7 @@ packages:
       - fzf           # ajout : recherche floue (Ctrl-R, Ctrl-T)
       - bat           # ajout : cat avec coloration
       - eza           # ajout : ls moderne
+      - vivid         # ajout : couleurs LS_COLORS (dossiers, symlinks, exécutables...)
       # Dev
       - git
       - git-delta
@@ -78,6 +79,7 @@ packages:
     - fzf
     - bat
     - eza
+    - vivid
     - ripgrep
     - fd-find
     - git-delta
